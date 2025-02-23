@@ -16,10 +16,12 @@ So i will provide you with captions, titles or images of the reel and you have t
 
 *emotional
 
-*informatinal
+*informational
+
+*shopping
 
 please always respond with just one word, that will be the name of the category you think the reel is of, maybe also share the probability
-
+AGAIN, PLEASE ONLY REPLY WIH JUST ONE WORD
 here is the caption of the reel - 
 """
 
