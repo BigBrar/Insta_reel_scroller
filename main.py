@@ -51,13 +51,26 @@ def main_func():
 
                 # get the current reel container
                 current_reel = page.locator('div.x78zum5.xl56j7k.x1n2onr6.xh8yej3').nth(reel_index)
+                print("FOUND IT")
 
                 # Then find the MORE button WITHIN this specific container
-                more_button = current_reel.locator('span.xlej3yl:visible')
-                more_button.click() #this expands the caption and tags
+                # more_button = current_reel.locator('span.xlej3yl:visible')
+                # more_button.click() #this expands the caption and tags
+                # Check if the "More" button exists before interacting
+                more_button_locator = current_reel.locator('span.xlej3yl:visible')
+                if more_button_locator.count() > 0:
+                    more_button = more_button_locator.first
+                    more_button.click()  # or your action
+                    # Add your button-handling logic here
+                else:
+                    print("More button not available - skipping")
+                    raise Exception
+                    # Continue execution without interruption
+                print("CLICKED THE MORE BUTTON!!")
                 
                 #once the caption and tags are expanded extract the current_reel container again
                 div_content = page.locator('div.x78zum5.xl56j7k.x1n2onr6.xh8yej3').nth(reel_index)
+                print("CONTAINER TEXT = ",div_content.inner_text())
 
                 #send the ai only the text from the current reel caption
                 ai_response = send_ai_request(div_content.inner_text())
