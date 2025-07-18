@@ -2,11 +2,39 @@ import time
 import json
 from playwright.sync_api import sync_playwright
 from additional_tools import parse_caption_tag,send_ai_request
+from process_comments import extract_from_html
 import ast
 
 parsed_reels = []
 # reel_index = 1
 
+
+
+def open_comments(page,reel_index):
+    print('clicking the comment button...')
+# Step 1: Get all visible comment buttons on page by SVG label
+    comment_buttons = page.locator('svg[aria-label="Comment"]').locator('..')  # parent div with click handler
+
+    # Step 2: Print how many buttons are visible
+    print(f"Total comment buttons found: {comment_buttons.count()}")
+
+    # Step 3: Click the one matching the reel_index
+    print(f"Clicking comment button for reel index {reel_index}")
+    comment_buttons.nth(reel_index).click()
+
+def extract_comments(page, max_comments=10):
+    time.sleep(2)
+    print("⏳ Extracting comments using XPath...")
+    # Wait for comment section using your XPath
+    comment_section = page.locator('xpath=/html/body/div[1]/div/div/div[2]/div/div/div[2]/div/div/div[1]/div[1]/div/div/div/div[1]/div/div[2]')
+    comment_section.wait_for(timeout=5000)
+    print("✅ Comment section found via XPath")
+
+    html = comment_section.inner_html()
+    comments = extract_from_html(html)
+    return comments
+
+    
 def read_cookies():
     with open('cookies.txt','r') as f:
         cookies = f.read()
@@ -51,6 +79,10 @@ def main_func():
 
                 # get the current reel container
                 current_reel = page.locator('div.x78zum5.xl56j7k.x1n2onr6.xh8yej3').nth(reel_index)
+                html = current_reel.inner_html()
+                # print(f'here it is \n{html}')
+                # quit()
+
                 print("FOUND IT")
 
                 # Then find the MORE button WITHIN this specific container
@@ -72,17 +104,31 @@ def main_func():
                 div_content = page.locator('div.x78zum5.xl56j7k.x1n2onr6.xh8yej3').nth(reel_index)
                 print("CONTAINER TEXT = ",div_content.inner_text())
 
+                # Clicking the comment section
+                open_comments(page, reel_index)
+
+
+                # Extract comments
+                comments = extract_comments(page, max_comments=10)
+
+
+
+
+                # input('continue?')
+
+
                 #send the ai only the text from the current reel caption
-                ai_response = send_ai_request(div_content.inner_text())
                 print(div_content.inner_text())
+                print("SENT AI REQUEST !!")
+                ai_response = send_ai_request(div_content.inner_text(), comments)
                 
                 
                 print(f'AI response = {ai_response}')
-                ai_response = json.loads(ai_response)
-                ai_response['reply'] = str(ai_response['reply']).lower()
+                # ai_response = json.loads(ai_response)
+                ai_response = str(ai_response).lower()
                 # input('continue?')
                 
-                if ai_response['reply'] == 'health' or ai_response['reply'] == 'motivation' or ai_response['reply'] == 'informational':
+                if ai_response == 'health' or ai_response == 'motivation' or ai_response == 'informational':
                     time.sleep(10)
 
                 reel_index += 1
