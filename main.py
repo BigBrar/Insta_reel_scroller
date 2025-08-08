@@ -32,6 +32,8 @@ def extract_comments(page, max_comments=10):
 
     html = comment_section.inner_html()
     comments = extract_from_html(html)
+    page.keyboard.press('Escape')
+
     return comments
 
     
@@ -70,7 +72,7 @@ def main_func():
         print('waiting for page domcontentloaded')
         page.wait_for_load_state('domcontentloaded')
 
-        while True:
+        for i in range(21):
             try:
                 print('finding more')
                 time.sleep(1)
@@ -79,8 +81,11 @@ def main_func():
 
                 # get the current reel container
                 current_reel = page.locator('div.x78zum5.xl56j7k.x1n2onr6.xh8yej3').nth(reel_index)
+                current_reel.click()
                 html = current_reel.inner_html()
                 # print(f'here it is \n{html}')
+
+                # page.keyboard.press('Space')
                 # quit()
 
                 print("FOUND IT")
@@ -129,7 +134,8 @@ def main_func():
                 # input('continue?')
                 
                 if ai_response == 'health' or ai_response == 'motivation' or ai_response == 'informational':
-                    time.sleep(10)
+                    current_reel.click()
+                    time.sleep(20)
 
                 reel_index += 1
                 # input('continue?')
@@ -140,8 +146,10 @@ def main_func():
                 reel_index += 1
                 page.keyboard.press('ArrowDown')
                 # time.sleep(1)
-        input('close?')
-        write_cookies(context.cookies())
+        # input('close?')
+        # write_cookies(context.cookies())
 
-
-main_func()
+while True:
+    main_func()
+    print("20 REELS DONE, restarting in 1 minute...")
+    time.sleep(60)
