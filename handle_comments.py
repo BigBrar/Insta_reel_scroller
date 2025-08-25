@@ -62,6 +62,7 @@ def get_unique_comments(comments):
     return unique_comments
 
 def open_comments(page,reel_index):
+    time.sleep(1)
     # print('clicking the comment button...')
 # Step 1: Get all visible comment buttons on page by SVG label
     comment_buttons = page.locator('svg[aria-label="Comment"]').locator('..')  # parent div with click handler

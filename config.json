@@ -1,0 +1,36 @@
+{
+  "ai": {
+    "provider": "groq", 
+    "providers": {
+      "groq": {
+        "api_key_env_var": "GROQ_API_KEY", 
+        "model": "llama3-70b-8192" 
+      },
+      "openrouter": {
+        "api_key_env_var": "OPENROUTER_API_KEY", 
+        "model": "nousresearch/hermes-3-llama-3.1-405b:free" 
+      },
+      "gemini": {
+        "api_key_env_var": "GOOGLE_GEMINI_API_KEY", 
+        "model": "gemini-2.5-flash-lite" 
+      },
+      "ollama": {
+        "model": "llama3.1" 
+      }
+    }
+  },
+  "prompt": {
+    "system_message": "i am trying to build a modal that will take an instagram video as input and tell what type of content that reel is all about, like either it's entertainment, education, love, health etc.\n\nSo i will provide you with captions, titles and comments of the reel and you have to tell which of the following category is best suited for that reel -\n\n*Entertainment (memes, funny, jokes, movies)\n*music\n*health\n*motivation\n*emotional\n*informational\n*shopping\n\nconsider the comments provided to rethink if the reel is either informational or not, since the captions can be manipulated to trick algorithms. so consider the comments as well.\nplease always respond with just one word, that will be the name of the category you think the reel is of\nAGAIN, PLEASE ONLY REPLY WIH JUST ONE WORD\nAnd also don't priortise travel reels, since they are also a kind of entertainment, so don't classify them as informational, they are a travel category.\nhere is the caption of the reel - "
+  },
+  "browser": {
+    "headless": false,
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36"
+  },
+  "processing": {
+    "max_reels_per_run": 21,
+    "scroll_pause_time": 1,
+    "categories_to_act_on": ["health", "motivation", "informational"],
+    "save_to_json": true,
+    "save_to_csv": true
+  }
+}

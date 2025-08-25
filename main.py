@@ -13,6 +13,7 @@ browser_args = [
 # reel_index = 1
 
 def iterate_and_watch_reels(page, reel_index):
+    print('reel index = ', reel_index)
     try:
         # print('finding more')
         time.sleep(1)
@@ -70,10 +71,14 @@ def iterate_and_watch_reels(page, reel_index):
         #scrolling to next reel 
         page.keyboard.press('ArrowDown')
 
+        return reel_index
+
     except Exception as e:
         print(f'ERROR {e}')
         reel_index += 1
         page.keyboard.press('ArrowDown')
+
+        return reel_index
     
 def read_cookies():
     try:
@@ -97,7 +102,7 @@ def rewrite_cookies(page, context):
 def main_func(relogin, headless=True):
     reel_index = 0
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel='chrome', headless=headless, args=browser_args )
+        browser = p.chromium.launch(channel='chrome', headless=False, args=browser_args )
 
         context = browser.new_context(
             permissions=[ ],  # Allow media autoplay
@@ -117,7 +122,7 @@ def main_func(relogin, headless=True):
         page.wait_for_load_state('domcontentloaded')
 
         for i in range(21):
-            iterate_and_watch_reels(page, reel_index)
+            reel_index = iterate_and_watch_reels(page, reel_index)
             
         # write_cookies(context.cookies())
 

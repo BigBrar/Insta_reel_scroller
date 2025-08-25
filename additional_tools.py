@@ -12,8 +12,22 @@ import ollama
 from openai import OpenAI
 from google import genai
 from google.genai import types
-
+import sys
 # genai.configure(api_key=google_gemini_api_key)
+
+def load_config(config_path: str = "config.json"):
+    """Loads configuration from a JSON file."""
+    try:
+        with open(config_path, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"Error: Config file '{config_path}' not found.")
+        sys.exit(1) # Or handle differently
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON in '{config_path}': {e}")
+        sys.exit(1) # Or handle differently
+
+CONFIG = load_config()
 
 class open_router_classifier:
     def __init__(self):
@@ -118,16 +132,39 @@ And also don't priortise travel reels, since they are also a kind of entertainme
 here is the caption of the reel - 
 """     
 
+def get_classifier(provider_name: str):
+    """Factory function to get the correct classifier instance."""
+    if provider_name == "groq":
+        return groq_classifier()
+    elif provider_name == "openrouter":
+        return open_router_classifier()
+    elif provider_name == "gemini":
+        return google_gemini() # Implement similarly
+        # pass
+    elif provider_name == "ollama":
+        return ollama_local() # Implement similarly
+    else:
+        print(f"Error: Unknown AI provider '{provider_name}' specified in config.")
+        sys.exit(1)
+
+
 def send_ai_request(data, comments=None):
     # response = requests.post('http://localhost:3000/chat',json={'message':f'{default_prompt}{data}'})
+    
+    provider_name = CONFIG['ai']['provider']
+    classifier = get_classifier(provider_name)
+    
     reel_data = {'caption':data, 'comments':comments}
-    # response = ask_gemini(str(reel_data))
-    gemini = google_gemini()
-    response = gemini.classify(str(reel_data))
+
+    response = classifier.classify(str(reel_data))
     print(f'\nAI RESPONSE: {response}\n')
-    quit()
-    save_to_json({'caption':data, 'comments':comments, 'target':response})
-    save_reel_to_csv(data, comments, response )
+
+    # Conditional saving based on config
+    if CONFIG['processing']['save_to_json']:
+        save_to_json({'caption': data, 'comments': comments, 'target': response})
+    if CONFIG['processing']['save_to_csv']:
+        save_reel_to_csv(data, comments, response)
+        
     return response
 
 def save_to_json(data):
